@@ -1,18 +1,22 @@
 const X_CLASS = "x";
 const CIRCLE_CLASS = "circle";
-const WINNING_COMBINATION = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
-
-const cellElements = document.querySelectorAll("[data-cell]");
+const TOTAL_ROWS = 4;
 const board = document.getElementById("board");
+const matrix = generateMatrix(TOTAL_ROWS);
+
+const WINNING_COMBINATIONS = [
+  printPrincipalDiagonal(matrix),
+  printSecondaryDiagonal(matrix),
+  ...matrix,
+  ...transpose(matrix),
+].map((i) => i.map((j) => j - 1));
+
+for (let i = 0; i < TOTAL_ROWS * TOTAL_ROWS; i++) {
+  board.innerHTML += '<div class="cell" data-cell></div>';
+}
+
+board.style["grid-template-columns"] = `repeat(${TOTAL_ROWS}, auto)`;
+const cellElements = document.querySelectorAll("[data-cell]");
 const winningMessageElement = document.getElementById("winningMessage");
 const restartButton = document.getElementById("restartButton");
 const winningMessageTextElement = document.querySelector(
@@ -47,8 +51,6 @@ function handleClick(e) {
     swapTurns();
     setBoardHoverClass();
   }
-
-  //switch Turns
 }
 
 function endGame(draw) {
@@ -89,9 +91,62 @@ function setBoardHoverClass() {
 }
 
 function checkWin(currentClass) {
-  return WINNING_COMBINATION.some((combination) => {
+  return WINNING_COMBINATIONS.some((combination) => {
     return combination.every((index) => {
       return cellElements[index].classList.contains(currentClass);
     });
   });
+}
+
+// Function to print the Principal Diagonal
+function printPrincipalDiagonal(mat) {
+  const arr = [];
+  const n = mat.length;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      // Condition for principal diagonal
+      if (i == j) {
+        arr.push(mat[i][j]);
+      }
+    }
+  }
+  return arr;
+}
+
+// Function to print the Secondary Diagonal
+function printSecondaryDiagonal(mat) {
+  const arr = [];
+  const n = mat.length;
+
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      // Condition for secondary diagonal
+      if (i + j == n - 1) {
+        arr.push(mat[i][j]);
+      }
+    }
+  }
+  return arr;
+}
+
+// transpose a matrix
+function transpose(mat) {
+  return mat[0].map((col, i) => mat.map((row) => row[i]));
+}
+
+// generate nxn matrix
+function generateMatrix(N) {
+  let element_value = 1;
+  let i = 0;
+  const matrix = [];
+  while (i < N) {
+    const arr = [];
+    for (let f = element_value; f < element_value + N; f++) {
+      arr.push(f);
+    }
+    element_value += N;
+    i++;
+    matrix.push(arr);
+  }
+  return matrix;
 }

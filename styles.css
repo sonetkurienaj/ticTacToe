@@ -21,7 +21,6 @@ body{
     align-content: center;
     justify-items: center;
     align-items: center;
-    grid-template-columns: repeat(3, auto);
 }
 
 .cell{
@@ -38,16 +37,16 @@ body{
 .cell:first-child, 
 .cell:nth-child(2),
 .cell:nth-child(3){
-    border-top: none;
+    /* border-top: none; */
 }
 
 .cell:nth-child(3n +1){
-    border-left: none;
+    /* border-left: none; */
     
 }
 
 .cell:nth-child(3n +3){
-    border-right: none;
+    /* border-right: none; */
     
 }
 
@@ -56,7 +55,7 @@ body{
 .cell:nth-child(8),
 .cell:last-child
 {
-    border-bottom: none;
+    /* border-bottom: none; */
 }
 
 .cell.x, 
