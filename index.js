@@ -14,6 +14,9 @@ app.use(express.static(publicDirectoryPath));
 
 io.on("connection", (socket) => {
   console.log("connected");
+  socket.on("clicked", (options, callback) => {
+    console.log(options);
+  });
 });
 
 server.listen(port, () => {

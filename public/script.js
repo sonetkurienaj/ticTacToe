@@ -3,6 +3,7 @@ const CIRCLE_CLASS = "circle";
 const TOTAL_ROWS = 3;
 const board = document.getElementById("board");
 const matrix = generateMatrix(TOTAL_ROWS);
+const socket = io();
 
 const WINNING_COMBINATIONS = [
   printPrincipalDiagonal(matrix),
@@ -12,7 +13,7 @@ const WINNING_COMBINATIONS = [
 ].map((i) => i.map((j) => j - 1));
 
 for (let i = 0; i < TOTAL_ROWS * TOTAL_ROWS; i++) {
-  board.innerHTML += `<div class="cell" data-cell>${i}</div>`;
+  board.innerHTML += `<div class="cell" id="${i}" data-cell></div>`;
 }
 
 board.style["grid-template-columns"] = `repeat(${TOTAL_ROWS}, auto)`;
@@ -43,6 +44,7 @@ function handleClick(e) {
   const cell = e.target;
   const currentClass = circleTurn ? CIRCLE_CLASS : X_CLASS;
   placeMark(cell, currentClass);
+  socket.emit("clicked", { id: cell.id, currentClass });
   if (checkWin(currentClass)) {
     endGame(false);
   } else if (isDraw()) {
