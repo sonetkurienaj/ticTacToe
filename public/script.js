@@ -22,6 +22,7 @@ socket.on("roomData", ({ room }) => {
   console.log({ room });
   currentTurn = room.currentTurn;
   swapTurns();
+  setBoardHoverClass();
   room.turns.forEach((turn) => {
     cellElements[turn.cell].classList.add(turn.side);
   });
