@@ -1,6 +1,6 @@
 const X_CLASS = "x";
 const CIRCLE_CLASS = "circle";
-const TOTAL_ROWS = 4;
+const TOTAL_ROWS = 3;
 const board = document.getElementById("board");
 const matrix = generateMatrix(TOTAL_ROWS);
 
@@ -12,7 +12,7 @@ const WINNING_COMBINATIONS = [
 ].map((i) => i.map((j) => j - 1));
 
 for (let i = 0; i < TOTAL_ROWS * TOTAL_ROWS; i++) {
-  board.innerHTML += '<div class="cell" data-cell></div>';
+  board.innerHTML += `<div class="cell" data-cell>${i}</div>`;
 }
 
 board.style["grid-template-columns"] = `repeat(${TOTAL_ROWS}, auto)`;
@@ -65,11 +65,17 @@ function endGame(draw) {
 }
 
 function isDraw() {
-  return [...cellElements].every((cell) => {
-    return (
-      cell.classList.contains(X_CLASS) || cell.classList.contains(CIRCLE_CLASS)
-    );
-  });
+  return WINNING_COMBINATIONS.map((combination) => {
+    let x_index_found = false,
+      circle_index_found = false;
+    return combination.some((index) => {
+      if (cellElements[index].classList.contains(X_CLASS)) x_index_found = true;
+      if (cellElements[index].classList.contains(CIRCLE_CLASS))
+        circle_index_found = true;
+
+      return circle_index_found && x_index_found;
+    });
+  }).every((result) => result);
 }
 
 function placeMark(cell, currentClass) {
