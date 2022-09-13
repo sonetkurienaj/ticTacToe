@@ -51,7 +51,6 @@ function getRoomInfo(room) {
 
 function addTurn(room, cell, side, user_id) {
   room = room.trim().toLowerCase();
-  console.log(rooms[room]?.turns);
   rooms[room]?.turns.push({
     cell,
     side,
@@ -61,6 +60,11 @@ function addTurn(room, cell, side, user_id) {
   console.log(rooms[room]?.turns);
 }
 
+function clearTurns(room) {
+  room = room.trim().toLowerCase();
+  rooms[room].turns = [];
+}
+
 module.exports = {
   addUser,
   // removeUser,
@@ -68,4 +72,5 @@ module.exports = {
   getUsersInRoom,
   getRoomInfo,
   addTurn,
+  clearTurns,
 };

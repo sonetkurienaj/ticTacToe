@@ -21,6 +21,7 @@ socket.emit("join", { username, room }, (error) => {
 socket.on("roomData", ({ room }) => {
   console.log({ room });
   currentTurn = room.currentTurn;
+  swapTurns();
   room.turns.forEach((turn) => {
     cellElements[turn.cell].classList.add(turn.side);
   });
@@ -101,6 +102,12 @@ function endGame(draw) {
       circleTurn ? "O's Wins" : "X's Wins"
     }Wins !`;
   }
+  socket.emit("endGame", { room }, (error) => {
+    if (error) {
+      alert(error);
+      location.href = "/";
+    }
+  });
   winningMessageElement.classList.add("show");
 }
 

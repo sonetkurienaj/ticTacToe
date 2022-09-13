@@ -2,7 +2,7 @@ const path = require("path");
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
-const { addUser, getRoomInfo, addTurn } = require("./utils/room");
+const { addUser, getRoomInfo, addTurn, clearTurns } = require("./utils/room");
 
 const app = express();
 const server = http.createServer(app);
@@ -20,6 +20,14 @@ io.on("connection", (socket) => {
     const { cell, side, room } = options;
     console.log(options, socket.id);
     addTurn(room, cell, side, socket.id);
+    io.to(room).emit("roomData", {
+      room: getRoomInfo(room),
+    });
+  });
+
+  socket.on("endGame", (options, callback) => {
+    const { room } = options;
+    clearTurns(room);
     io.to(room).emit("roomData", {
       room: getRoomInfo(room),
     });
