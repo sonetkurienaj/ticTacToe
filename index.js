@@ -2,6 +2,7 @@ const path = require("path");
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
+const { addUser, getRoomInfo, addTurn } = require("./utils/room");
 
 const app = express();
 const server = http.createServer(app);
@@ -14,8 +15,29 @@ app.use(express.static(publicDirectoryPath));
 
 io.on("connection", (socket) => {
   console.log("connected");
+
   socket.on("clicked", (options, callback) => {
-    console.log(options);
+    const { cell, side, room } = options;
+    console.log(options, socket.id);
+    addTurn(room, cell, side, socket.id);
+    io.to(room).emit("roomData", {
+      room: getRoomInfo(room),
+    });
+  });
+
+  socket.on("join", (options, callback) => {
+    const { error, user } = addUser({ id: socket.id, ...options });
+    if (error) {
+      return callback(error);
+    } else {
+      socket.join(user.room);
+
+      io.to(user.room).emit("roomData", {
+        room: getRoomInfo(user.room),
+      });
+
+      callback();
+    }
   });
 });
 

@@ -3,7 +3,42 @@ const CIRCLE_CLASS = "circle";
 const TOTAL_ROWS = 3;
 const board = document.getElementById("board");
 const matrix = generateMatrix(TOTAL_ROWS);
+const { username, room } = Qs.parse(location.search, {
+  ignoreQueryPrefix: true,
+});
+let disabled = false;
+let currentTurn;
+
 const socket = io();
+
+socket.emit("join", { username, room }, (error) => {
+  if (error) {
+    alert(error);
+    location.href = "/";
+  }
+});
+
+socket.on("roomData", ({ room }) => {
+  console.log({ room });
+  currentTurn = room.currentTurn;
+  room.turns.forEach((turn) => {
+    cellElements[turn.cell].classList.add(turn.side);
+  });
+
+  disabled = false;
+  if (
+    room.currentTurn !== room.users.find((u) => u.username === username).side
+  ) {
+    disabled = true;
+  }
+
+  console.log(disabled);
+
+  cellElements.forEach((cell) => {
+    cell.style.cursor = disabled ? "not-allowed" : "pointer";
+    cell.style["background-color"] = disabled ? "rgb(213, 199, 115)" : "";
+  });
+});
 
 const WINNING_COMBINATIONS = [
   printPrincipalDiagonal(matrix),
@@ -41,10 +76,13 @@ function startGame() {
 }
 
 function handleClick(e) {
+  if (disabled) return;
   const cell = e.target;
-  const currentClass = circleTurn ? CIRCLE_CLASS : X_CLASS;
+  const currentClass = currentTurn;
+  console.log({ currentClass });
+
   placeMark(cell, currentClass);
-  socket.emit("clicked", { id: cell.id, currentClass });
+  socket.emit("clicked", { cell: cell.id, side: currentClass, room });
   if (checkWin(currentClass)) {
     endGame(false);
   } else if (isDraw()) {
@@ -85,7 +123,7 @@ function placeMark(cell, currentClass) {
 }
 
 function swapTurns() {
-  circleTurn = !circleTurn;
+  circleTurn = currentTurn === "circle";
 }
 
 function setBoardHoverClass() {
